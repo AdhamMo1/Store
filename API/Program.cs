@@ -5,6 +5,7 @@ using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Data.Repo;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                              lo => lo.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 builder.Services.AddScoped<IProductRepository,ProductRepo>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
+{
+    var configuration = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis"), true);
+    return ConnectionMultiplexer.Connect(configuration);
+});
+builder.Services.AddScoped<IBasketRepository,BasketRepo>();
 // Handle Exceptions
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
