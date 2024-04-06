@@ -31,7 +31,7 @@ namespace Infrastructure.Data.Repo
             return await _context.Set<T>().FindAsync(Id);
         }
 
-        public virtual async Task<IReadOnlyList<T>> GetAllAsync()
+        public virtual async Task<IReadOnlyList<T>> GetAllAsync( string? sort, int? brandId, int? typeId, int? pageNumber, int? pageSize)
         {
             return await _context.Set<T>().ToListAsync();
         }

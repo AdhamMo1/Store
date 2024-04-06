@@ -14,9 +14,23 @@ namespace Infrastructure.Data.Repo
         public ProductRepo(AppDbContext context) : base(context)
         {
         }
-        public override async Task<IReadOnlyList<Product>> GetAllAsync()
+        public override async Task<IReadOnlyList<Product>> GetAllAsync( string? sort, int? brandId, int? typeId, int? pageNumber, int? pageSize)
         {
-            return await _context.Products.Include(x=>x.ProductType).Include(x=>x.ProductBrand).ToListAsync();
+            var Products = await _context.Products.Include(x => x.ProductType).Include(x => x.ProductBrand).ToListAsync();
+            
+            if (brandId is not null)
+            {
+                Products = Products.Where(x => x.ProductBrandId == brandId).ToList();
+            }
+            if (typeId is not null)
+            {
+                Products = Products.Where(x => x.ProductTypeId == typeId).ToList();
+            }
+            if(pageNumber is not null && pageSize is not null)
+            {
+                Products = Products.Skip((int)((pageNumber - 1) * pageSize)).Take((int)pageSize).ToList();
+            }
+            return Products;
         }
         public override async Task<Product?> FindByIdAsync(int Id)
         {

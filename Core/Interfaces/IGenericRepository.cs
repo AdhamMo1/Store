@@ -8,7 +8,7 @@ namespace Core.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {
-        Task<IReadOnlyList<T>> GetAllAsync();
+        Task<IReadOnlyList<T>> GetAllAsync( string? sort, int? brandId, int? typeId, int? pageNumber,int? pageSize);
 
         Task<T?> FindByIdAsync(int Id);
 

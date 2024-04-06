@@ -1,4 +1,6 @@
+using API.Exceptions;
 using API.Helpers;
+using API.Middleware;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Data.Repo;
@@ -17,6 +19,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                              lo => lo.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 builder.Services.AddScoped<IProductRepository,ProductRepo>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+// Handle Exceptions
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,10 +30,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+
 app.UseAuthorization();
+
+app.UseExceptionHandler();
 
 app.MapControllers();
 

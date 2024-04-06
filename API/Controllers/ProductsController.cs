@@ -1,4 +1,5 @@
 ﻿using API.Dtos;
+using API.Errors;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Models;
@@ -22,17 +23,31 @@ namespace API.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> ListAllAsync()
+        public async Task<IActionResult> ListAllAsync([FromQuery]string? sort , [FromQuery] int? brandId , [FromQuery] int? typeId,[FromQuery] int? pageNumber,[FromQuery] int? pageSize)
         {
-            var Products = await _productRepo.GetAllAsync();
-                
+            var Products =await _productRepo.GetAllAsync(sort, brandId, typeId, pageNumber, pageSize);
+            if (!string.IsNullOrEmpty(sort))
+            {
+                switch (sort)
+                {
+                    case "priceAsc":
+                        Products = Products.OrderBy(x => x.Price).ToList();
+                        break;
+                    case "priceDesc":
+                        Products = Products.OrderByDescending(x => x.Price).ToList();
+                        break;
+                    default:
+                        return BadRequest(" 400 , sort => you must choose between priceAsc , priceDesc");
+
+                }
+            }
             return Ok(_mapper.Map<IEnumerable<Product>,IEnumerable<ProductDto>>(Products));
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(int id)
         {
             var Product = await _productRepo.FindByIdAsync(id);
-            return Ok(Product is not null? _mapper.Map<Product, ProductDto>(Product) : NotFound());
+            return Ok(Product is not null? _mapper.Map<Product, ProductDto>(Product) : NotFound(new ApiResponse(404)));
         }
     }
 }
