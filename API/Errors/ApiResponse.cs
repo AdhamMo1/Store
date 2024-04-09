@@ -3,15 +3,14 @@ namespace API.Errors
 {
     public class ApiResponse
     {
-        private readonly int _statusCode;
-        private readonly string _message;
 
         public ApiResponse(int statusCode,string? message = null)
         {
             _statusCode = statusCode;
             _message = message ?? GetDefualtMessage(statusCode);
         }
-
+        public int _statusCode { get; set; }
+        public string _message { get; set; }
         private string GetDefualtMessage(int statusCode)
         {
             switch (statusCode)

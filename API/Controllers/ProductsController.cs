@@ -3,6 +3,7 @@ using API.Errors;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,7 @@ namespace API.Controllers
             _mapper = mapper;
         }
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ListAllAsync([FromQuery]string? sort , [FromQuery] int? brandId , [FromQuery] int? typeId,[FromQuery] int? pageNumber,[FromQuery] int? pageSize)
         {
             var Products =await _productRepo.GetAllAsync(sort, brandId, typeId, pageNumber, pageSize);

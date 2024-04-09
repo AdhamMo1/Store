@@ -15,3 +15,12 @@ GET {{API_HostAddress}}/api/products
 
 GET {{API_HostAddress}}/api/products/16
 ###
+
+POST {{API_HostAddress}}/api/account/Register
+Content-Type: application/json
+
+{
+  //RegisterDto
+}
+
+###
