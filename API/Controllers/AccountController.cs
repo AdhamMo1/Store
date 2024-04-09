@@ -24,15 +24,24 @@ namespace API.Controllers
         }
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<UserDto>> GetUser()
+        public async Task<ActionResult<UserInfoDto>> GetCurrentUser()
         {
             var Email = HttpContext.User.Claims?.FirstOrDefault(x=>x.Type == ClaimTypes.Email)?.Value;
             var user = await _userManager.FindByEmailAsync(Email);
-            return new UserDto
+            return new UserInfoDto
             {
                 Email = user.Email,
                 DisplayName = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                FName = user.FName,
+                LName = user.LName,
+                Address1 = user.Address1,
+                Address2 = user.Address2,
+                City = user.City,
+                State = user.State,
+                Street = user.Street,
+                ZipCode = user.ZipCode,
+                Phone= user.PhoneNumber
             };
         }
         [HttpPost("Login")]
