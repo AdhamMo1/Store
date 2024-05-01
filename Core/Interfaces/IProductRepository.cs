@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces
 {
-    public interface IProductRepository : IGenericRepository<Product>
+    public interface IProductRepository 
     {
-        
+         Task<IReadOnlyList<Product>> GetAllAsync(string? sort, int? brandId, int? typeId, int? pageNumber, int? pageSize);
+         Task<Product?> FindByIdAsync(int Id);
+
     }
 }

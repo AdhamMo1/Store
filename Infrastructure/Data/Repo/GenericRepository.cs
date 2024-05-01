@@ -16,14 +16,21 @@ namespace Infrastructure.Data.Repo
         {
             _context = context;
         }
-        public virtual Task<bool> AddAsync(T Entity)
+        public virtual void Add(T Entity)
         {
-            throw new NotImplementedException();
+            _context.Set<T>().Add(Entity);
         }
 
-        public virtual Task<bool> DeleteAsync(int Id)
+        public virtual bool Delete(int Id)
         {
-            throw new NotImplementedException();
+            var entity = _context.Set<T>().Find(Id);
+            if(entity is null)
+            {
+                return false;
+            }
+            _context.Set<T>().Remove(entity);
+            return true;
+            
         }
 
         public virtual async Task<T?> FindByIdAsync(int Id)
@@ -31,14 +38,15 @@ namespace Infrastructure.Data.Repo
             return await _context.Set<T>().FindAsync(Id);
         }
 
-        public virtual async Task<IReadOnlyList<T>> GetAllAsync( string? sort, int? brandId, int? typeId, int? pageNumber, int? pageSize)
+        public virtual async Task<IReadOnlyList<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync();
         }
 
-        public virtual bool Update(T Entity)
+        public virtual void Update(T Entity)
         {
-            throw new NotImplementedException();
+            _context.Set<T>().Attach(Entity);
+            _context.Entry(Entity).State = EntityState.Modified;
         }
     }
 }

@@ -2,7 +2,9 @@ using API.Exceptions;
 using API.Helpers;
 using API.Middleware;
 using Core.Interfaces;
+using Core.Models;
 using Core.Models.Identity;
+using Core.Models.OrderAggregate;
 using Infrastructure.Data;
 using Infrastructure.Data.Repo;
 using Infrastructure.Services;
@@ -13,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using System.Text;
+using Order = Core.Models.OrderAggregate.Order;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +37,12 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(c =>
 });
 builder.Services.AddScoped<IBasketRepository,BasketRepo>();
 builder.Services.AddScoped<ITokenService,TokenService>();
+builder.Services.AddScoped<IOrderRepository,OrderRepo>();
+builder.Services.AddScoped<IGenericRepository<Product>,GenericRepository<Product>>();
+builder.Services.AddScoped<IGenericRepository<DeliveryMethod>,GenericRepository<DeliveryMethod>>();
+builder.Services.AddScoped<IGenericRepository<Order>,GenericRepository<Order>>();
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+
 // identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<AppDbContext>();

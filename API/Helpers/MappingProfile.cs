@@ -1,6 +1,7 @@
 ﻿using API.Dtos;
 using AutoMapper;
 using Core.Models;
+using Core.Models.OrderAggregate;
 
 namespace API.Helpers
 {
@@ -13,6 +14,8 @@ namespace API.Helpers
                 .ForMember(x => x.PictureUrl, x => x.MapFrom<ProductImageURLresolver>());
             CreateMap<CustomerBasketDto, CustomerBasket>();
             CreateMap<BasketItemDto, BasketItem>();
+            CreateMap<AddressDto,Address>();
+            CreateMap<Address,AddressDto>();
         }
     }
 }

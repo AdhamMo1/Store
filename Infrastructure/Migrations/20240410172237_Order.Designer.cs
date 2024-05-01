@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240410172237_Order")]
+    partial class Order
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,12 +116,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Models.OrderAggregate.Address", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Address1")
                         .HasColumnType("nvarchar(max)");
 
@@ -142,8 +139,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("ZipCode")
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
 
                     b.ToTable("Address");
                 });
@@ -198,10 +193,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentIntentId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ShippToAddressId")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("SubTotal")
                         .HasColumnType("decimal(18,2)");
@@ -209,8 +202,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DeliveryMethodId");
-
-                    b.HasIndex("ShippToAddressId");
 
                     b.ToTable("Orders");
                 });
@@ -223,9 +214,6 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ItemOrderdId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
@@ -237,8 +225,6 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemOrderdId");
-
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems");
@@ -246,12 +232,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Models.OrderAggregate.ProductItemOrdered", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("ProductItemId")
                         .HasColumnType("int");
 
@@ -262,8 +242,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ProductUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
 
                     b.ToTable("ProductItemOrdered");
                 });
@@ -485,30 +463,14 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Models.OrderAggregate.Address", "ShippToAddress")
-                        .WithMany()
-                        .HasForeignKey("ShippToAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("DeliveryMethod");
-
-                    b.Navigation("ShippToAddress");
                 });
 
             modelBuilder.Entity("Core.Models.OrderAggregate.OrderItem", b =>
                 {
-                    b.HasOne("Core.Models.OrderAggregate.ProductItemOrdered", "ItemOrderd")
-                        .WithMany()
-                        .HasForeignKey("ItemOrderdId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Core.Models.OrderAggregate.Order", null)
                         .WithMany("Items")
                         .HasForeignKey("OrderId");
-
-                    b.Navigation("ItemOrderd");
                 });
 
             modelBuilder.Entity("Core.Models.Product", b =>

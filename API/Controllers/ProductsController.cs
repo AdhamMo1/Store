@@ -15,19 +15,20 @@ namespace API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductRepository _productRepo;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IProductRepository _productRepository;
 
-        public ProductsController(IProductRepository ProductRepo , IMapper mapper)
+        public ProductsController(IProductRepository productRepository,IUnitOfWork unitOfWork , IMapper mapper)
         {
-            _productRepo = ProductRepo;
+            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> ListAllAsync([FromQuery]string? sort , [FromQuery] int? brandId , [FromQuery] int? typeId,[FromQuery] int? pageNumber,[FromQuery] int? pageSize)
         {
-            var Products =await _productRepo.GetAllAsync(sort, brandId, typeId, pageNumber, pageSize);
+            var Products =await _unitOfWork.Products.GetAllAsync(sort, brandId, typeId, pageNumber, pageSize);
             if (!string.IsNullOrEmpty(sort))
             {
                 switch (sort)
@@ -48,7 +49,7 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(int id)
         {
-            var Product = await _productRepo.FindByIdAsync(id);
+            var Product = await _unitOfWork.Products.FindByIdAsync(id);
             return Ok(Product is not null? _mapper.Map<Product, ProductDto>(Product) : NotFound(new ApiResponse(404)));
         }
     }

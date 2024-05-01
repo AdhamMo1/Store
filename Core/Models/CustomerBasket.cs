@@ -19,6 +19,6 @@ namespace Core.Models
         }
         [Key,Required]
         public string Id { get; set; }
-        public IList<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
+        public IReadOnlyList<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
     }
 }

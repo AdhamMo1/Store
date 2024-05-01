@@ -9,15 +9,25 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Data.Repo
 {
-    public class ProductRepo : GenericRepository<Product> , IProductRepository
+    public class ProductRepo : IProductRepository
     {
-        public ProductRepo(AppDbContext context) : base(context)
+        private readonly AppDbContext _context;
+
+        public ProductRepo(AppDbContext context) 
         {
+            _context = context;
         }
-        public override async Task<IReadOnlyList<Product>> GetAllAsync( string? sort, int? brandId, int? typeId, int? pageNumber, int? pageSize)
+
+        public async Task<Product?> FindByIdAsync(int Id)
+        {
+            return await _context.Products.Include(x => x.ProductType).Include(x => x.ProductBrand).Where(x => x.Id == Id).FirstOrDefaultAsync();
+
+        }
+
+        public async Task<IReadOnlyList<Product>> GetAllAsync(string? sort, int? brandId, int? typeId, int? pageNumber, int? pageSize)
         {
             var Products = await _context.Products.Include(x => x.ProductType).Include(x => x.ProductBrand).ToListAsync();
-            
+
             if (brandId is not null)
             {
                 Products = Products.Where(x => x.ProductBrandId == brandId).ToList();
@@ -26,16 +36,12 @@ namespace Infrastructure.Data.Repo
             {
                 Products = Products.Where(x => x.ProductTypeId == typeId).ToList();
             }
-            if(pageNumber is not null && pageSize is not null)
+            if (pageNumber is not null && pageSize is not null)
             {
                 Products = Products.Skip((int)((pageNumber - 1) * pageSize)).Take((int)pageSize).ToList();
             }
             return Products;
         }
-        public override async Task<Product?> FindByIdAsync(int Id)
-        {
-            return await _context.Products.Include(x=>x.ProductType).Include(x=> x.ProductBrand).Where(x=>x.Id == Id).FirstOrDefaultAsync();
-        }
-
+       
     }
 }
